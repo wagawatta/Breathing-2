@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0f14" />
+  <title>Quiet Nose Breathing</title>
+
+  <style>
+    :root{
+      font-family:-apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      --bg:#0b0f14;
+      --card:#101822;
+      --border:#1c2a3a;
+      --text:#e9eef5;
+      --muted:#b6c2d1;
+      --accent:#1d3b66;
+      --accentBorder:#2b568f;
+      --danger:#ff6b6b;
+      --ok:#4cd964;
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+    }
+    .wrap{
+      width:min(560px, 94vw);
+      padding:18px 16px 28px;
+    }
+    h1{
+      margin:10px 0 6px;
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:0.2px;
+    }
+    .sub{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.4;
+      font-size:14px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:14px;
+      margin:12px 0;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    label{
+      font-size:13px;
+      color:var(--muted);
+    }
+    input[type="number"], select{
+      background:#162233;
+      color:var(--text);
+      border:1px solid #22354c;
+      border-radius:12px;
+      padding:10px 12px;
+      font-size:16px;
+      width:120px;
+    }
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border:1px solid #22354c;
+      border-radius:12px;
+      background:#0f1722;
+    }
+    .toggle input{ transform:scale(1.15); }
+    button{
+      cursor:pointer;
+      border:1px solid #22354c;
+      background:#162233;
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:16px;
+    }
+    button.primary{
+      background:var(--accent);
+      border-color:var(--accentBorder);
+      font-weight:700;
+    }
+    button.secondary{
+      background:#0f1722;
+    }
+    button:disabled{
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+
+    .circleWrap{
+      display:flex;
+      justify-content:center;
+      padding:14px 0 6px;
+      position:relative;
+    }
+    .circle{
+      width:260px;
+      height:260px;
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #2f79ff, #12315c 60%, #0f1a28);
+      transform:scale(0.65);
+      transition:transform 250ms linear, filter 200ms linear;
+      box-shadow:0 0 2px rgba(255,255,255,0.06), 0 20px 60px rgba(0,0,0,0.45);
+      position:relative;
+      overflow:hidden;
+    }
+    .flash{
+      animation: flash 220ms ease-out;
+    }
+    @keyframes flash{
+      0%{ filter:brightness(1); }
+      40%{ filter:brightness(1.35); }
+      100%{ filter:brightness(1); }
+    }
+
+    .phase{
+      text-align:center;
+      font-size:22px;
+      font-weight:800;
+      margin-top:8px;
+    }
+    .hint{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin-top:4px;
+    }
+    .countdown{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%, -50%);
+      font-size:76px;
+      font-weight:900;
+      letter-spacing:1px;
+      text-shadow:0 4px 18px rgba(0,0,0,0.45);
+      user-select:none;
+      pointer-events:none;
+    }
+    @media (max-width:420px){
+      .circle{ width:240px; height:240px; }
+      .countdown{ font-size:66px; }
+    }
+
+    .stats{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+    }
+    .pill{
+      padding:6px 10px;
+      border:1px solid #22354c;
+      border-radius:999px;
+      background:#0f1722;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+    }
+    .note{
+      font-size:13px;
+      color:var(--muted);
+      line-height:1.45;
+      margin-top:8px;
+    }
+    .note strong{ color:var(--text); }
+    .warn{
+      color:#ffd28f;
+    }
+    .ok{
+      color:#b9f6ca;
+    }
+    .danger{
+      color:#ffb3b3;
+    }
+    .tiny{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      margin-top:10px;
+    }
+    .divider{
+      height:1px;
+      background:#1c2a3a;
+      margin:12px 0;
+    }
+    .footer{
+      margin-top:14px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      text-align:left;
+    }
+    code{
+      background:#0f1722;
+      border:1px solid #22354c;
+      padding:2px 6px;
+      border-radius:8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>Quiet Nose Breathing</h1>
+    <p class="sub">Simple drill timer for nasal breathing. Designed to be calm + quiet. (Sound works on iPhone once you press Start.)</p>
+
+    <div class="card">
+      <div class="row">
+        <div>
+          <label>Inhale (sec)</label><br />
+          <input id="inhale" type="number" min="2" max="12" value="4" />
+        </div>
+        <div>
+          <label>Exhale (sec)</label><br />
+          <input id="exhale" type="number" min="2" max="16" value="6" />
+        </div>
+        <div>
+          <label>Minutes</label><br />
+          <input id="minutes" type="number" min="1" max="30" value="5" />
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div class="toggle">
+          <input id="soundToggle" type="checkbox" checked />
+          <label for="soundToggle">Sound</label>
+        </div>
+
+        <div class="toggle">
+          <input id="vibrateToggle" type="checkbox" />
+          <label for="vibrateToggle">Vibration</label>
+        </div>
+
+        <div class="toggle">
+          <input id="flashToggle" type="checkbox" checked />
+          <label for="flashToggle">Flash</label>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="startBtn" class="primary">Start</button>
+        <button id="pauseBtn" class="secondary" disabled>Pause</button>
+        <button id="resetBtn" class="secondary" disabled>Reset</button>
+      </div>
+
+      <div class="tiny warn" id="iosVibeNote" style="display:none;margin-top:10px;">
+        iPhone note: vibration usually won’t work in Safari/PWAs (Apple limitation). Use <strong>Sound</strong> + <strong>Flash</strong> instead.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="circleWrap">
+        <div class="circle" id="circle">
+          <div class="countdown" id="countdown">00</div>
+        </div>
+      </div>
+      <div class="phase" id="phase">Ready</div>
+      <div class="hint" id="hint">Press Start. Keep lips closed. Quiet air.</div>
+
+      <div class="stats">
+        <div class="pill">Cycle: <span id="cycle">0</span></div>
+        <div class="pill">Time left: <span id="timeLeft">0:00</span></div>
+      </div>
+
+      <div class="note">
+        Tip: If your exhale is loud, it’s usually too forceful. Aim for a <strong>soft, slow, steady</strong> exhale.
+      </div>
+    </div>
+
+    <div class="card">
+      <h1 style="font-size:18px;margin:0 0 8px;">Reminders</h1>
+      <div class="sub" style="margin:0 0 10px;">
+        Best option on iPhone: add a repeating reminder in the Reminders app, or add a repeating Calendar event.
+        This page can generate a Calendar reminder file for you.
+      </div>
+
+      <div class="row">
+        <div>
+          <label>Daily reminder time</label><br />
+          <select id="remTime">
+            <option value="0700">07:00</option>
+            <option value="0900">09:00</option>
+            <option value="1200">12:00</option>
+            <option value="1500">15:00</option>
+            <option value="1800">18:00</option>
+            <option value="2100" selected>21:00</option>
+          </select>
+        </div>
+        <div>
+          <label>Message</label><br />
+          <select id="remMsg">
+            <option value="2 min quiet nasal breathing (4 in / 6 out).">2 min quiet nasal breathing (4 in / 6 out).</option>
+            <option value="Do your nose breathing drill now. Soft, slow exhale.">Do your nose breathing drill now. Soft, slow exhale.</option>
+            <option value="Breathing: nasal only. Relax your shoulders and jaw.">Breathing: nasal only. Relax your shoulders and jaw.</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <button id="icsBtn" class="primary">Create Calendar Reminder (.ics)</button>
+        <button id="copyBtn" class="secondary">Copy reminder text</button>
+      </div>
+
+      <div class="tiny">
+        How to use the .ics on iPhone: tap the downloaded file in <strong>Files</strong> → it will offer <strong>Add to Calendar</strong> → save.
+      </div>
+    </div>
+
+    <div class="footer">
+      If you want this to feel even more “app-like” on iPhone: open this page in Safari → Share → <strong>Add to Home Screen</strong>.
+    </div>
+  </div>
+
+  <script>
+    // ---------- Helpers ----------
+    const $ = (id) => document.getElementById(id);
+
+    function clampInt(v, min, max, fallback){
+      const n = parseInt(v, 10);
+      if (Number.isNaN(n)) return fallback;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function fmtMMSS(totalSec){
+      const m = Math.floor(totalSec / 60);
+      const s = totalSec % 60;
+      return `${m}:${String(s).padStart(2,'0')}`;
+    }
+
+    // ---------- Audio (works on iPhone after user gesture) ----------
+    let audioCtx = null;
+
+    function initAudio(){
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state !== "running") audioCtx.resume();
+    }
+
+    function beep(freq=880, ms=140, vol=0.06){
+      if (!audioCtx || audioCtx.state !== "running") return;
+
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = "sine";
+      o.frequency.value = freq;
+
+      o.connect(g);
+      g.connect(audioCtx.destination);
+
+      const t = audioCtx.currentTime;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.01);
+      g.gain.linearRampToValueAtTime(0, t + ms/1000);
+
+      o.start(t);
+      o.stop(t + ms/1000 + 0.02);
+    }
+
+    // ---------- Vibration ----------
+    function vibrate(pattern){
+      // iOS generally does not support navigator.vibrate
+      if (!navigator.vibrate) return false;
+      return navigator.vibrate(pattern);
+    }
+
+    // ---------- UI / State ----------
+    const circle = $("circle");
+    const countdownEl = $("countdown");
+    const phaseEl = $("phase");
+    const hintEl = $("hint");
+    const cycleEl = $("cycle");
+    const timeLeftEl = $("timeLeft");
+
+    const inhaleEl = $("inhale");
+    const exhaleEl = $("exhale");
+    const minutesEl = $("minutes");
+
+    const startBtn = $("startBtn");
+    const pauseBtn = $("pauseBtn");
+    const resetBtn = $("resetBtn");
+
+    const soundToggle = $("soundToggle");
+    const vibrateToggle = $("vibrateToggle");
+    const flashToggle = $("flashToggle");
+
+    const iosVibeNote = $("iosVibeNote");
+
+    let running = false;
+    let paused = false;
+    let timerId = null;
+
+    let inhaleSec = 4;
+    let exhaleSec = 6;
+    let totalSeconds = 300;
+
+    let phase = "inhale"; // inhale | exhale
+    let phaseRemaining = 0;
+    let timeRemaining = 0;
+    let cyclesDone = 0;
+
+    function isLikelyIOS(){
+      const ua = navigator.userAgent || "";
+      return /iPad|iPhone|iPod/.test(ua);
+    }
+
+    function readSettings(){
+      inhaleSec = clampInt(inhaleEl.value, 2, 12, 4);
+      exhaleSec = clampInt(exhaleEl.value, 2, 16, 6);
+      const mins = clampInt(minutesEl.value, 1, 30, 5);
+      totalSeconds = mins * 60;
+
+      inhaleEl.value = inhaleSec;
+      exhaleEl.value = exhaleSec;
+      minutesEl.value = mins;
+    }
+
+    function setCircleForPhase(p){
+      // inhale = expand, exhale = contract
+      if (p === "inhale") circle.style.transform = "scale(1)";
+      else circle.style.transform = "scale(0.65)";
+    }
+
+    function flash(){
+      if (!flashToggle.checked) return;
+      circle.classList.remove("flash");
+      // force reflow
+      void circle.offsetWidth;
+      circle.classList.add("flash");
+    }
+
+    function onPhaseChange(nextPhase){
+      phase = nextPhase;
+      phaseRemaining = (phase === "inhale") ? inhaleSec : exhaleSec;
+
+      phaseEl.textContent = (phase === "inhale") ? "Inhale (nose)" : "Exhale (slow + quiet)";
+      hintEl.textContent = (phase === "inhale")
+        ? "Quiet air in through the nose."
+        : "Soft, long exhale. Don’t blow hard.";
+
+      setCircleForPhase(phase);
+      countdownEl.textContent = String(phaseRemaining).padStart(2,'0');
+
+      // Sound/vibe/flash cues
+      if (soundToggle.checked){
+        // lower tone for exhale, higher for inhale
+        beep(phase === "inhale" ? 880 : 660, 120, 0.06);
+      }
+      if (vibrateToggle.checked){
+        vibrate([60]); // may do nothing on iPhone
+      }
+      flash();
+    }
+
+    function updateTopStats(){
+      cycleEl.textContent = String(cyclesDone);
+      timeLeftEl.textContent = fmtMMSS(timeRemaining);
+    }
+
+    function resetState(){
+      readSettings();
+
+      running = false;
+      paused = false;
+      clearInterval(timerId);
+      timerId = null;
+
+      cyclesDone = 0;
+      timeRemaining = totalSeconds;
+
+      phaseEl.textContent = "Ready";
+      hintEl.textContent = "Press Start. Keep lips closed. Quiet air.";
+      cycleEl.textContent = "0";
+      timeLeftEl.textContent = fmtMMSS(timeRemaining);
+
+      countdownEl.textContent = "00";
+      circle.style.transform = "scale(0.65)";
+
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+      pauseBtn.textContent = "Pause";
+    }
+
+    function tick(){
+      if (!running || paused) return;
+
+      // decrement timers
+      timeRemaining = Math.max(0, timeRemaining - 1);
+      phaseRemaining = Math.max(0, phaseRemaining - 1);
+
+      countdownEl.textContent = String(phaseRemaining).padStart(2,'0');
+      updateTopStats();
+
+      if (timeRemaining === 0){
+        // end
+        running = false;
+        clearInterval(timerId);
+        timerId = null;
+
+        phaseEl.textContent = "Done";
+        hintEl.textContent = "Nice. Keep nasal breathing in daily life.";
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        resetBtn.disabled = false;
+
+        if (soundToggle.checked) beep(523, 250, 0.07); // finishing tone
+        if (vibrateToggle.checked) vibrate([80, 60, 80]);
+        flash();
+        return;
+      }
+
+      if (phaseRemaining === 0){
+        // switch phase
+        if (phase === "inhale"){
+          onPhaseChange("exhale");
+        } else {
+          cyclesDone += 1;
+          onPhaseChange("inhale");
+        }
+        updateTopStats();
+      }
+    }
+
+    // ---------- Button handlers ----------
+    startBtn.addEventListener("click", () => {
+      readSettings();
+
+      // unlock audio on iPhone
+      if (soundToggle.checked) initAudio();
+
+      running = true;
+      paused = false;
+
+      // initialise session
+      timeRemaining = totalSeconds;
+      cyclesDone = 0;
+
+      // start with inhale
+      onPhaseChange("inhale");
+      updateTopStats();
+
+      if (!timerId) timerId = setInterval(tick, 1000);
+
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resetBtn.disabled = false;
+    });
+
+    pauseBtn.addEventListener("click", () => {
+      if (!running) return;
+
+      paused = !paused;
+      pauseBtn.textContent = paused ? "Resume" : "Pause";
+
+      if (!paused){
+        // iPhone audio can suspend; re-resume if needed
+        if (soundToggle.checked) initAudio();
+      }
+    });
+
+    resetBtn.addEventListener("click", () => resetState());
+
+    // Show iOS vibration note if relevant
+    if (isLikelyIOS()) {
+      iosVibeNote.style.display = "block";
+    }
+
+    // ---------- Reminders (.ics generator) ----------
+    function buildICS(localHHMM, message){
+      // Build a daily repeating event starting tomorrow at chosen time, for 10 minutes
+      // Uses floating local time (no TZ) so iPhone will interpret in current TZ.
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, parseInt(localHHMM.slice(0,2),10), parseInt(localHHMM.slice(2),10), 0);
+      const end = new Date(start.getTime() + 10 * 60 * 1000);
+
+      const pad = (n) => String(n).padStart(2,'0');
+      const dt = (d) => `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+
+      const uid = `breathing-${Date.now()}@local`;
+
+      const lines = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//QuietNoseBreathing//EN",
+        "CALSCALE:GREGORIAN",
+        "BEGIN:VEVENT",
+        `UID:${uid}`,
+        `DTSTAMP:${dt(new Date())}`,
+        `DTSTART:${dt(start)}`,
+        `DTEND:${dt(end)}`,
+        `SUMMARY:${escapeICS("Nose breathing drill")}`,
+        `DESCRIPTION:${escapeICS(message)}`,
+        "RRULE:FREQ=DAILY",
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ];
+      return lines.join("\r\n");
+    }
+
+    function escapeICS(s){
+      return String(s)
+        .replace(/\\/g, "\\\\")
+        .replace(/\n/g, "\\n")
+        .replace(/,/g, "\\,")
+        .replace(/;/g, "\\;");
+    }
+
+    $("icsBtn").addEventListener("click", async () => {
+      const t = $("remTime").value;
+      const msg = $("remMsg").value;
+
+      const ics = buildICS(t, msg);
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+
+      // trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "nose-breathing-reminder.ics";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    });
+
+    $("copyBtn").addEventListener("click", async () => {
+      const msg = $("remMsg").value;
+      try{
+        await navigator.clipboard.writeText(msg);
+        $("copyBtn").textContent = "Copied!";
+        setTimeout(()=> $("copyBtn").textContent = "Copy reminder text", 900);
+      } catch(e){
+        alert("Couldn’t copy automatically. Long-press and copy this:\n\n" + msg);
+      }
+    });
+
+    // ---------- Init ----------
+    resetState();
+  </script>
+</body>
+</html>
